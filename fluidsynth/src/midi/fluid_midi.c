@@ -679,6 +679,13 @@ fluid_midi_file_read_event(fluid_midi_file *mf, fluid_track_t *track)
         type = status & 0xf0;
         channel = status & 0x0f;
 
+        /**** jimbo1qaz ****/
+
+        if (mf->nchannels > 16) {
+            channel = (track->num) % mf->nchannels;
+            if (channel >= 9) channel++;
+        }
+
         /* all channel message have at least 1 byte of associated data */
         if ((param1 = fluid_midi_file_getc(mf)) < 0) {
             FLUID_LOG(FLUID_ERR, "Unexpected end of file");
@@ -1518,6 +1525,8 @@ fluid_player_load(fluid_player_t *player, fluid_playlist_item *item)
     player->division = fluid_midi_file_get_division(midifile);
     fluid_player_set_midi_tempo(player, player->miditempo); // Update deltatime
     /*FLUID_LOG(FLUID_DBG, "quarter note division=%d\n", player->division); */
+
+    fluid_settings_getint(player->synth->settings, "synth.midi-channels", &(midifile->nchannels));
 
     if (fluid_midi_file_load_tracks(midifile, player) != FLUID_OK) {
         if (buffer_owned) {

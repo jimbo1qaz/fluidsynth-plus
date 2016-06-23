@@ -331,6 +331,7 @@ typedef struct {
   int c;
   int type;
   int ntracks;
+  int nchannels;
   int uses_smpte;
   unsigned int smpte_fps;
   unsigned int smpte_res;
